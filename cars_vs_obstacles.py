@@ -1,5 +1,5 @@
 """
-Name:
+Name: Cars Vs Obstacles
 Author: Joey Burgee
 Date: March 11, 2018
 """
@@ -32,6 +32,8 @@ class Window (object):
         self.clock = pg.time.Clock()
         self.FPS = 60
         self.running = False
+        self.p1games_won = 0
+        self.p2games_won = 0
 
         # DEFINE FONT ATTRIBUTES
         self.font = pg.font.SysFont("Comic Sans MS", 30)
@@ -117,6 +119,9 @@ class Window (object):
         self.ins_text = self.font.render("For Control Instructions Press H", False, WHITE)
         self.screen.blit(self.ins_text, [self.WIDTH / 2 - 225, self.HEIGHT / 2 + 100])
 
+        self.reset_text = self.font.render("For Game Count Reset Press R", False, WHITE)
+        self.screen.blit(self.reset_text, [self.WIDTH / 2 - 200, self.HEIGHT / 2 + 145])
+
         # PLAYER 1 INSTRUCTIONS
         self.p1ins = self.font.render("Player 1 Instructions:", False, BLUE)
         self.p1w = self.font.render("W = Up", False, WHITE)
@@ -133,6 +138,18 @@ class Window (object):
 
         # WINNER
         self.screen.blit(self.winner, [self.WIDTH / 2 - 100, self.HEIGHT / 2])
+        
+
+        # ---MAKE GAME COUNTER---
+
+        # PLAYER 1
+        self.p1games_text = self.font.render("P1 Games Won: " + str(self.p1games_won), False, BLUE)
+        self.screen.blit(self.p1games_text, [self.WIDTH / 2 - 125, self.HEIGHT - 90])
+
+        # PLAYER 2
+        self.p2games_text = self.font.render("P2 Games Won: " + str(self.p2games_won), False, RED)
+        self.screen.blit(self.p2games_text, [self.WIDTH / 2 - 125, self.HEIGHT - 45])
+        
 
         pg.display.update()
 
@@ -160,6 +177,31 @@ class Window (object):
 
                         self.screen.blit(self.start_text, [self.WIDTH / 2 - 225, self.HEIGHT / 2 - 100])
                         
+                        pg.display.update()
+                    if event.key == pg.K_r:
+                        self.p1games_won = 0
+                        self.p2games_won = 0
+                        
+                        self.screen.blit(self.background, [0, 0])
+                        
+                        # PLAYER 1
+                        self.p1games_text = self.font.render("P1 Games Won: " + str(self.p1games_won), False, BLUE)
+                        self.screen.blit(self.p1games_text, [self.WIDTH / 2 - 125, self.HEIGHT - 90])
+
+                        # PLAYER 2
+                        self.p2games_text = self.font.render("P2 Games Won: " + str(self.p2games_won), False, RED)
+                        self.screen.blit(self.p2games_text, [self.WIDTH / 2 - 125, self.HEIGHT - 45])
+
+                        # ---INSTRUCTIONS---
+                        self.screen.blit(self.start_text, [self.WIDTH / 2 - 225, self.HEIGHT / 2 - 45])
+
+                        self.screen.blit(self.ins_text, [self.WIDTH / 2 - 225, self.HEIGHT / 2 + 100])
+
+                        self.screen.blit(self.reset_text, [self.WIDTH / 2 - 200, self.HEIGHT / 2 + 145])
+
+                        # WINNER
+                        self.screen.blit(self.winner, [self.WIDTH / 2 - 100, self.HEIGHT / 2])
+                       
                         pg.display.update()
                 if event.type == pg.MOUSEBUTTONDOWN:
                         self.running = True
@@ -253,11 +295,13 @@ class Window (object):
             self.winner = self.font.render("Player 2 Wins!", False, RED)
             self.crash.play()
             self.running = False
+            self.p2games_won += 1
         # SET RIGHT-ROAD BOUNDARY FOR PLAYER 1
         if (self.x1 > self.WIDTH / 2 + 205):
             self.winner = self.font.render("Player 2 Wins!", False, RED)
             self.crash.play()
             self.running = False
+            self.p2games_won += 1
 
 
         # ---SET PLAYER 2 COLLISIONS---
@@ -273,11 +317,13 @@ class Window (object):
             self.winner = self.font.render("Player 1 Wins!", False, RED)
             self.crash.play()
             self.running = False
+            self.p1games_won += 1
         # SET RIGHT-ROAD BOUNDARY FOR PLAYER 2
         if (self.x2 > self.WIDTH / 2 + 205):
             self.winner = self.font.render("Player 1 Wins!", False, RED)
             self.crash.play()
             self.running = False
+            self.p1games_won += 1
 
 
         # MAKE CARS BOUNCE OFF EACH OTHER
@@ -326,45 +372,53 @@ class Window (object):
             self.winner = self.font.render("Player 2 Wins!", False, RED)
             pg.mixer.Sound.play(self.crash)
             self.crash.play()
+            self.p2games_won += 1
             self.running = False
         # OBSTACLE 2
         if (int(self.ox2) in range(int(self.x1) - 32, int(self.x1) + 45) and int(self.oy2) in range(int(self.y1) -45, int(self.y1) + 64)):
             self.winner = self.font.render("Player 2 Wins!", False, RED)
             self.crash.play()
+            self.p2games_won += 1
             self.running = False
         # OBSTACLE 3
         if (int(self.ox3) in range(int(self.x1) - 32, int(self.x1) + 45) and int(self.oy3) in range(int(self.y1) - 45, int(self.y1) + 64)):
             self.winner = self.font.render("Player 2 Wins!", False, RED)
             self.crash.play()
+            self.p2games_won += 1
             self.running = False
         # OBSTACLE 4
         if (int(self.ox4) in range(int(self.x1) - 32, int(self.x1) + 45) and int(self.oy4) in range(int(self.y1) - 45, int(self.y1) + 64)):
             self.winner = self.font.render("Player 2 Wins!", False, RED)
             self.crash.play()
+            self.p2games_won += 1
             self.running = False
 
 
-        # ---MAKE PLAYER 1 DIE WHEN HIT BY OBSTACLE---
+        # ---MAKE PLAYER 2 DIE WHEN HIT BY OBSTACLE---
 
         # OBSTACLE 1
         if (int(self.ox1) in range(int(self.x2) - 32, int(self.x2) + 45) and int(self.oy1) in range(int(self.y2) -45, int(self.y2) + 64)):
             self.winner = self.font.render("Player 1 Wins!", False, RED)
             self.crash.play()
+            self.p1games_won += 1
             self.running = False
         # OBSTACLE 2
         if (int(self.ox2) in range(int(self.x2) - 32, int(self.x2) + 45) and int(self.oy2) in range(int(self.y2) - 45, int(self.y2) + 64)):
             self.winner = self.font.render("Player 1 Wins!", False, RED)
             self.crash.play()
+            self.p1games_won += 1
             self.running = False
         # OBSTACLE 3
         if (int(self.ox3) in range(int(self.x2) - 32, int(self.x2) + 45) and int(self.oy3) in range(int(self.y2) - 45, int(self.y2) + 64)):
             self.winner = self.font.render("Player 1 Wins!", False, RED)
             self.crash.play()
+            self.p1games_won += 1
             self.running = False
         # OBSTACLE 4
         if (int(self.ox4) in range(int(self.x2) - 32, int(self.x2) + 45) and int(self.oy4)in range(int(self.y2) - 45, int(self.y2) + 64)):
             self.winner = self.font.render("Player 1 Wins!", False, RED)
             self.crash.play()
+            self.p1games_won += 1
             self.running = False
         
         if (self.stopy > self.HEIGHT):
